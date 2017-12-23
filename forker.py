@@ -3,9 +3,10 @@
 import os
 import sys
 
-import workers.portscanner as worker
+#import workers.portscanner as worker
 # import workers.simple as worker
 # import workers.template as worker
+import workers.externalcommand as worker
 
 def forker():
     global worklist

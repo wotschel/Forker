@@ -4,7 +4,7 @@ import socket
 
 debugon = 0
 forks = 3
-worklist = ["localhost", "127.0.0.1", "www.witczak.de"]
+worklist = ["localhost", "127.0.0.1"]
 
 
 def worker(var):
