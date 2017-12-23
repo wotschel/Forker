@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import subprocess
+import subprocess as sp
 
 
 debugon = 0
@@ -13,14 +13,14 @@ def worker(var):
 
     FNULL = open(os.devnull, 'w')
 
-    r = subprocess.call(["ping", "-c 1", "-W 2", var], stdout=FNULL, stderr=subprocess.STDOUT)
+    r = sp.call(["ping", "-c 1", "-W 2", var], stdout=FNULL, stderr=sp.STDOUT)
     if r == 0:
         print("Success {}".format(var))
     else:
         print("Failure {}".format(var))
-   
+
     FNULL.close()
- 
+
     return(0)
 
 
