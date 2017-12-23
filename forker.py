@@ -6,7 +6,6 @@ import sys
 import workers.portscanner as worker
 # import workers.simple as worker
 # import workers.template as worker
-# TODO: FORKBOMB
 
 def forker():
     global worklist
