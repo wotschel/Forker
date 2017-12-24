@@ -2,8 +2,8 @@
 
 import socket
 
-debugon = False
-forks = 3
+#debugon = False
+#forks = 3
 worklist = ["localhost", "127.0.0.1"]
 
 

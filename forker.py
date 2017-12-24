@@ -28,7 +28,7 @@ def forker():
 
 def debug(message):
     global debugon
-    if debugon == 1:
+    if debugon:
         print(message)
 
 
@@ -70,34 +70,39 @@ if __name__ == "__main__":
 
     # import workers.simple as worker
 
-    parser = argparse.ArgumentParser(description="Forker Script")
-    parser.add_argument("-f", "--forks", metavar='int', default=2, help="Number of processes to spawn")
-    parser.add_argument("-d", "--debug", default=False, action="store_true", help="Debug Mode on/off")
+    p = argparse.ArgumentParser(description="Forker Script")
+    p.add_argument("-f", "--forks", metavar='int', default=2, help="Number of processes to spawn")
+    p.add_argument("-d", "--debug", default=False, action="store_true", help="Debug Mode on/off")
 
-    parser.add_argument("script")
-    args = parser.parse_args()
+    p.add_argument("script")
+    args = p.parse_args()
 
     script = args.script
     if not os.path.exists(script):
-        print("Script {} does not exist or is not importable.".format(script))
+        print("Script {} does not exist or is not importable.\n".format(script))
+        p.print_help()
         sys.exit(-1)
-
-    s = script.replace("/", ".")
-    s = s.replace(".py", "")
+    else:
+        s = script.replace("/", ".")
+        s = s.replace(".py", "")
 
     worker = importlib.import_module(s)
 
     if args.forks:
         forks = int(args.forks)
     else:
-        forks = int(worker.forks)
+        try:
+            forks = int(worker.forks)
+        except AttributeError:
+            forks = 1
 
     if args.debug:
         debugon = int(args.debug)
     else:
-        debugon = int(worker.debugon)
-
-    worklist = worker.worklist
+        try:
+            debugon = int(worker.debugon)
+        except AttributeError:
+            debugon = False
 
     if "worker" in dir(worker):
         pass
@@ -105,11 +110,16 @@ if __name__ == "__main__":
         sys.stderr.write("\nERR: No worker function present!\n\n")
         exit(-1)
 
+    try:
+        worklist = worker.worklist
+    except AttributeError:
+        sys.stderr.write("\nERR: No worklist present! \n\n")
+        exit(-1)
+
     debug(worklist)
 
     childrens = []
     work_done = 0
-
     len_worklist = len(worklist)
 
     if forks > len_worklist:
