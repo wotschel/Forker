@@ -2,11 +2,8 @@
 
 import os
 import sys
-
-# import workers.portscanner as worker
-# import workers.simple as worker
-# import workers.template as worker
-import workers.externalcommand as worker
+import argparse
+import importlib
 
 
 def forker():
@@ -16,7 +13,7 @@ def forker():
         var = worklist.pop()
     except IndexError:
         debug("Nothing left todo!")
-        return(5)
+        return(-5)
 
     debug(worklist)
     pid = os.fork()
@@ -43,6 +40,8 @@ def main():
         pid = forker()
         if pid > 0:
             childrens.append(pid)
+        if pid == -5:
+            debug("Not forking child")
 
     debug(childrens)
 
@@ -69,27 +68,59 @@ def main():
 
 if __name__ == "__main__":
 
+    # import workers.simple as worker
+
+    parser = argparse.ArgumentParser(description="Forker Script")
+    parser.add_argument("-f", "--forks", metavar='int', default=2, help="Number of processes to spawn")
+    parser.add_argument("-d", "--debug", default=False, action="store_true", help="Debug Mode on/off")
+
+    parser.add_argument("script")
+    args = parser.parse_args()
+
+    script = args.script
+    if not os.path.exists(script):
+        print("Script {} does not exist or is not importable.".format(script))
+        sys.exit(-1)
+
+    s = script.replace("/", ".")
+    s = s.replace(".py", "")
+
+    worker = importlib.import_module(s)
+
+    if args.forks:
+        forks = int(args.forks)
+    else:
+        forks = int(worker.forks)
+
+    if args.debug:
+        debugon = int(args.debug)
+    else:
+        debugon = int(worker.debugon)
+
+    worklist = worker.worklist
+
     if "worker" in dir(worker):
         pass
     else:
         sys.stderr.write("\nERR: No worker function present!\n\n")
         exit(-1)
 
-    debugon = worker.debugon
-    forks = worker.forks
-    worklist = worker.worklist
-
     debug(worklist)
 
     childrens = []
     work_done = 0
 
-    if forks > len(worklist):
-        sys.stderr.write("Hint: forks is > than objects in worklist\n")
+    len_worklist = len(worklist)
+
+    if forks > len_worklist:
+        # forks = len_worklist-1
+        sys.stderr.write("\nHint: forks is > than objects in worklist\n")
     elif forks == 1:
         sys.stderr.write("Hm... forks is 1?\n")
     elif forks == 0:
         sys.stderr.write("Err: forks is 0\n")
         exit(-1)
+
+    print("Starting Script: {} with {} forks\n".format(script, forks))
 
     main()

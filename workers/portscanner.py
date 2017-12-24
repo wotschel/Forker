@@ -2,7 +2,7 @@
 
 import socket
 
-debugon = 0
+debugon = False
 forks = 3
 worklist = ["localhost", "127.0.0.1"]
 

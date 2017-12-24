@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-debugon = 0
+debugon = False
 forks = 3
 worklist = ["Hello World", "Hello Moon", "Hello Mars", "Hello Sun"]
 

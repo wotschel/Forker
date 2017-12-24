@@ -4,7 +4,7 @@ import os
 import subprocess as sp
 
 
-debugon = 0
+debugon = False
 forks = 3
 worklist = ["127.0.0.1", "localhost", "128.10.10.1"]
 
